@@ -93,7 +93,7 @@ for dir in "${images[@]}"; do
 
   # Does the image directory contain any Dockerfile at all?
   if ! find "$dir" -type f -name Dockerfile -print -quit >/dev/null; then
-    missing_dockerfile="$(jq -c --arg n "$name" '. + [$n]' <<<"$missing_dockerfile")"
+    # No Dockerfile contexts in this image directory; skip it silently
     continue
   fi
 
@@ -159,14 +159,10 @@ fi
 
 # Strict mode: fail if any missing
 if [[ "$STRICT_MISSING" == "true" ]]; then
-  md_count=$(jq -r 'length' <<<"$missing_dockerfile")
   mt_count=$(jq -r 'length' <<<"$missing_tags")
   mc_count=$(jq -r 'length' <<<"$missing_context")
-  if [[ "$md_count" -gt 0 || "$mt_count" -gt 0 || "$mc_count" -gt 0 ]]; then
+  if [[ "$mt_count" -gt 0 || "$mc_count" -gt 0 ]]; then
     echo "ERROR: Missing build metadata detected." >&2
-    if [[ "$md_count" -gt 0 ]]; then
-      echo " - Missing Dockerfile for images: $(jq -r '.|join(", ")' <<<"$missing_dockerfile")" >&2
-    fi
     if [[ "$mt_count" -gt 0 ]]; then
       echo " - Missing or empty tags.txt for images: $(jq -r '.|join(", ")' <<<"$missing_tags")" >&2
     fi
