@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "containers/openami/**"
-      - "containers/scripts/discover-build-matrix.sh"
-      - "containers/.github/workflows/build-all.yml"
+      - "openami/**"
+      - "scripts/discover-build-matrix.sh"
+      - ".github/workflows/build-all.yml"
   schedule:
     - cron: "0 2 * * *" # nightly
 
@@ -32,12 +32,12 @@ jobs:
         id: discover
         shell: bash
         env:
-          OPENAMI_DIR: containers/openami
+          OPENAMI_DIR: openami
           STRICT_MISSING: "true"
         run: |
           set -euo pipefail
-          chmod +x containers/scripts/discover-build-matrix.sh
-          containers/scripts/discover-build-matrix.sh >> "$GITHUB_OUTPUT"
+          chmod +x scripts/discover-build-matrix.sh
+          scripts/discover-build-matrix.sh >> "$GITHUB_OUTPUT"
 
   build:
     name: Build and push

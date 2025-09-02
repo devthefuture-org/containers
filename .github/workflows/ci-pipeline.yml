@@ -3,9 +3,9 @@ name: Containers PR CI
 on:
   pull_request:
     paths:
-      - "containers/openami/**"
-      - "containers/scripts/**"
-      - "containers/.github/workflows/ci-pipeline.yml"
+      - "openami/**"
+      - "scripts/**"
+      - ".github/workflows/ci-pipeline.yml"
 
 permissions:
   contents: read
@@ -37,8 +37,8 @@ jobs:
           files="$(gh api --paginate "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUM}/files" | jq -r '.[].filename')"
 
           # Collect changed images under containers/openami/<image>/
-          mapfile -t changed_imgs < <(echo "$files" | grep -E '^containers/openami/[^/]+/' | cut -d/ -f1-3 | sort -u || true)
-          mapfile -t changed_dockerfiles < <(echo "$files" | grep -E '^containers/openami/.*/Dockerfile$' | sort -u || true)
+          mapfile -t changed_imgs < <(echo "$files" | grep -E '^openami/[^/]+/' | cut -d/ -f1-2 | sort -u || true)
+          mapfile -t changed_dockerfiles < <(echo "$files" | grep -E '^openami/.*/Dockerfile$' | sort -u || true)
 
           if [[ ${#changed_imgs[@]} -eq 0 ]]; then
             echo "No image changes detected, skip."
@@ -52,7 +52,7 @@ jobs:
           inc='[]'
           for imgdir in "${changed_imgs[@]}"; do
             name="$(basename "$imgdir")"
-            base_dir="containers/openami/${name}"
+            base_dir="openami/${name}"
             tfile="${base_dir}/tags.txt"
             if [[ ! -f "$tfile" ]]; then
               echo "ERROR: Missing tags.txt for image ${name}"
