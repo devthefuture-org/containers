@@ -28,6 +28,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Initialize tags (best-effort)
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x scripts/init-tags.sh
+          OPENAMI_DIR=openami scripts/init-tags.sh
+
       - name: Matrix discovery (strict)
         id: discover
         shell: bash
